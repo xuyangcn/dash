@@ -480,15 +480,6 @@ static void BlockNotifyCallback(const uint256& hashNewTip)
     boost::thread t(runCommand, strCmd); // thread runs free
 }
 
-void EventNotify(const std::string& strEvent)
-{
-    std::string strCmd = GetArg("-eventnotify", "");
-
-    boost::replace_all(strCmd, "%s", strEvent);
-    boost::thread t(runCommand, strCmd); // thread runs free
-}
-
-
 struct CImportingNow
 {
     CImportingNow() {

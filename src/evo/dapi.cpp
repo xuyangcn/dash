@@ -15,6 +15,8 @@
 #include "json/json_spirit.h"
 #include "json/json_spirit_value.h"
 #include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string/replace.hpp>
+#include <boost/thread.hpp>
 
 
 int nError;
@@ -40,6 +42,13 @@ std::string GetPrivateDataFile(std::string strUID, int nSlot)
     return filename.c_str();
 }
 
+void EventNotify(const std::string& strEvent)
+{
+    std::string strCmd = GetArg("-eventnotify", "");
+
+    boost::replace_all(strCmd, "%s", strEvent);
+    boost::thread t(runCommand, strCmd); // thread runs free
+}
 
 std::string escapeJsonString(const std::string& input) {
     // NOTE: Any ideas on replacing this with something more portable? 

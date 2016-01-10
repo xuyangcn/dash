@@ -9,9 +9,15 @@
 #ifndef DAPI_H
 #define DAPI_H
 
+namespace boost
+{
+class thread_group;
+} // namespace boost
+
+
 #include "main.h"
 #include "db.h"
-#include "init.h"
+//ø#include "init.h"
 #include "rpcserver.h"
 
 #include "util.h"
@@ -34,6 +40,8 @@ std::string GetIndexFile(std::string strFilename);
 std::string GetProfileFile(std::string strUID);
 std::string GetPrivateDataFile(std::string strUID, int nSlot);
 std::string escapeJsonString(const std::string& input);
+
+void EventNotify(const std::string& strEvent);
 
 class CDAPI
 {
