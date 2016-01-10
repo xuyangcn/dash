@@ -5,7 +5,7 @@
 
 #include "main.h"
 #include "db.h"
-#include "init.h"
+//#include "init.h"
 #include "rpcserver.h"
 #include "utilmoneystr.h"
 #include "evo/dapi.h"

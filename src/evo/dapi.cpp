@@ -9,7 +9,7 @@
 #include "main.h"
 #include "core_io.h"
 #include "db.h"
-#include "init.h"
+//#include "init.h"
 #include "dapi.h"
 #include "file.h"
 #include "json/json_spirit.h"
