@@ -1416,6 +1416,14 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     // ********************************************************* Step 10: setup DarkSend
 
+    LogPrintf("Dash Evolution Variables...\n");
+
+    std::string datadir = GetArg("-datadir", "none");
+    std::string eventnotify = GetArg("-eventnotify", "none");
+
+    LogPrintf("datadir2 = %s\n", datadir);
+    LogPrintf("eventnotify command = %s\n", eventnotify);
+
     uiInterface.InitMessage(_("Loading masternode cache..."));
 
     CMasternodeDB mndb;
