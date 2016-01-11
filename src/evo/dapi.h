@@ -30,7 +30,6 @@ class thread_group;
 #include "univalue/univalue.h"
 #include <string>
 #include <sstream>
-
 #include <boost/lexical_cast.hpp>
 
 using namespace std;

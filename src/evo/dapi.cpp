@@ -17,7 +17,6 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/thread.hpp>
-#include <regex>
 
 int nError;
 std::string strErrorMessage;
@@ -40,6 +39,14 @@ std::string GetPrivateDataFile(std::string strUID, int nSlot)
     std::string strFilename = strUID + "." + boost::lexical_cast<std::string>(nSlot);
     boost::filesystem::path filename = GetDataDirectory() / "users" / strFilename;
     return filename.c_str();
+}
+
+bool IsValidUsername(std::string strUsername)
+{
+    for(std::string::size_type i = 0; i < strUsername.size(); ++i) {
+        if(!std::isalpha(strUsername[i]) && !std::isdigit(strUsername[i]) ) return false;
+    }
+    return true;
 }
 
 void EventNotify(const std::string& strEvent)
@@ -289,16 +296,17 @@ bool CDAPI::ValidateUsernames(Object& obj)
     Object objData;
     string strUID = "";
     if(!FindValueAsObject(obj, "data", objData)) return false;
+
     if(FindValueAsString(objData, "to_uid", strUID))
     {
-        if (!std::regex_match (strUID, std::regex("^[a-zA-Z0-9]+$") ))
+        if (!IsValidUsername(strUID))
         {
             SetError(1011, "Invalid to_uid - must be alphanumeric: " + strUID);
         }
     }
     if(FindValueAsString(objData, "from_uid", strUID))
     {
-        if (!std::regex_match (strUID, std::regex("^[a-zA-Z0-9]+$") ))
+        if (!IsValidUsername(strUID))
         {
             SetError(1011, "Invalid from_uid - must be alphanumeric: " + strUID);
         }
