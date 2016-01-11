@@ -49,6 +49,7 @@ private:
     CDAPI();
 
 public:
+    static bool ValidateUsernames(Object& obj);
     static bool Execute(Object& obj);
     static bool ValidateSignature(Object& obj);
     static bool GetProfile(Object& obj);

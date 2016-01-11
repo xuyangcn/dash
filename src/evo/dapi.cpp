@@ -17,7 +17,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/thread.hpp>
-
+#include <regex>
 
 int nError;
 std::string strErrorMessage;
@@ -198,6 +198,11 @@ bool CDAPI::Execute(Object& obj)
 {
     ResetErrorStatus();
 
+    if(obj.size() > 2000)
+    {
+        SetError(1013, "[\"object\"] is too large");   
+    }
+
     // dapi command only
     std::string strObject;
     if(!FindValueAsString(obj, "object", strObject))
@@ -222,8 +227,12 @@ bool CDAPI::Execute(Object& obj)
         SetError(1012, "[\"data\"][\"command\"] is required in data structure");
     }
 
-    // SUPPORTED COMMANDS
+    // check and make sure the usernames are OK
+    ValidateUsernames(obj);
 
+    printf("%d\n", nError);
+
+    // SUPPORTED COMMANDS
     if(nError == 0)
     {
         if(strCommand == "get_profile") {
@@ -268,6 +277,32 @@ bool CDAPI::ValidateSignature(Object& obj)
         hash object
         check signature against hash
     */
+
+    return true;
+}
+
+
+bool CDAPI::ValidateUsernames(Object& obj)
+{
+
+    // get the user we want to open
+    Object objData;
+    string strUID = "";
+    if(!FindValueAsObject(obj, "data", objData)) return false;
+    if(FindValueAsString(objData, "to_uid", strUID))
+    {
+        if (!std::regex_match (strUID, std::regex("^[a-zA-Z0-9]+$") ))
+        {
+            SetError(1011, "Invalid to_uid - must be alphanumeric: " + strUID);
+        }
+    }
+    if(FindValueAsString(objData, "from_uid", strUID))
+    {
+        if (!std::regex_match (strUID, std::regex("^[a-zA-Z0-9]+$") ))
+        {
+            SetError(1011, "Invalid from_uid - must be alphanumeric: " + strUID);
+        }
+    }
 
     return true;
 }
