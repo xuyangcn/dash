@@ -3,8 +3,8 @@
     "data" : {
         "command" : "broadcast_message",
         "subcommand" : "tx",
-        "my_uid" : "1337",
-        "target_uid" : "1337", 
+        "from_uid" : "1337",
+        "to_uid" : "1337", 
         "payload" : "SIG"
     }
 }

@@ -178,12 +178,12 @@ std::string SerializeJsonFromObject(Object objToSerialize)
 
 // GET OBJECT AND CONVERT TO VARIABLE
 
-bool FindValueAsString(Object obj, std::string strName, std::string& strOut)
+bool FindValueAsString(Object obj, std::string strName, std::string& strOut, bool fRequired=true)
 {
     const Value& result = json_spirit::find_value(obj, strName);
     if (result.type() == null_type)
     {
-        SetError(1008, "Missing required field : " + strName);
+        if(fRequired) SetError(1008, "Missing required field : " + strName);
         return false;
     }
 
@@ -328,14 +328,14 @@ bool CDAPI::ValidateUsernames(Object& obj)
     string strUID = "";
     if(!FindValueAsObject(obj, "data", objData)) return false;
 
-    if(FindValueAsString(objData, "to_uid", strUID))
+    if(FindValueAsString(objData, "to_uid", strUID, false))
     {
         if (!IsValidUsername(strUID))
         {
             SetError(1011, "Invalid to_uid - must be alphanumeric: " + strUID);
         }
     }
-    if(FindValueAsString(objData, "from_uid", strUID))
+    if(FindValueAsString(objData, "from_uid", strUID, false))
     {
         if (!IsValidUsername(strUID))
         {
