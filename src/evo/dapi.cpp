@@ -52,7 +52,7 @@ std::string GetPrivateDataFile(std::string strUID, int nSlot)
 bool IsValidUsername(std::string strUsername)
 {
     for(std::string::size_type i = 0; i < strUsername.size(); ++i) {
-        if(!std::isalpha(strUsername[i]) && !std::isdigit(strUsername[i]) ) return false;
+        if(!std::isalpha(strUsername[i]) && !std::isdigit(strUsername[i] && strUsername[i] != '_') ) return false;
     }
     return true;
 }
