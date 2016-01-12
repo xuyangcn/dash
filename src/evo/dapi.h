@@ -34,8 +34,6 @@ std::string GetProfileFile(std::string strUID);
 std::string GetPrivateDataFile(std::string strUID, int nSlot);
 std::string escapeJsonString(const std::string& input);
 
-void EventNotify(const std::string& strEvent);
-
 class CDAPI
 {
 private:
