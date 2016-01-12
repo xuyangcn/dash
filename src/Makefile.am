@@ -94,6 +94,7 @@ BITCOIN_CORE_H = \
   crypter.h \
   darksend.h \
   darksend-relay.h \
+  easywsclient.h \
   db.h \
   eccryptoverify.h \
   ecwrapper.h \
@@ -180,6 +181,7 @@ libbitcoin_server_a_SOURCES = \
   bloom.cpp \
   chain.cpp \
   checkpoints.cpp \
+  easywsclient.cpp \
   evo/file.cpp \
   evo/dapi.cpp \
   json/json_spirit_reader.cpp \

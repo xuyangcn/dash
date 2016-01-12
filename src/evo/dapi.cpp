@@ -9,11 +9,11 @@
 #include "main.h"
 #include "core_io.h"
 #include "db.h"
-#include "init.h"
 #include "dapi.h"
 #include "file.h"
 #include "json/json_spirit.h"
 #include "json/json_spirit_value.h"
+#include "easywsclient.h"
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/thread.hpp>
@@ -26,6 +26,9 @@
 int nError;
 std::string strErrorMessage;
 // error reporting
+
+using easywsclient::WebSocket;
+WebSocket::pointer ws_client; 
 
 std::string GetIndexFile(std::string strFilename)
 {
@@ -70,8 +73,19 @@ void EventNotify(const std::string& strEvent)
 {
     std::string strCmd = GetArg("-eventnotify", "");
 
-    boost::replace_all(strCmd, "%s", strEvent);
-    boost::thread t(runCommand, strCmd); // thread runs free
+    //boost::replace_all(strCmd, "%s", strEvent);
+    //boost::thread t(runCommand, strCmd); // thread runs free
+
+    if(!ws_client)
+    {
+        ws_client = WebSocket::from_url("ws://localhost:5000/");
+    }
+
+    assert(ws_client);
+    ws_client->send(strEvent);
+    ws_client->poll();
+
+    printf("%s\n", strEvent.c_str());
 }
 
 std::string escapeJsonString(const std::string& input) {
@@ -156,9 +170,9 @@ std::string SerializeJsonFromObject(Object objToSerialize)
     //TODO: this is terrible, we need to correctly clean and escape the json :) 
     std::stringstream ss;
     json_spirit::write( objToSerialize, ss );
-    std::string strJson = escapeJsonString("'" + ss.str() + "'");
-    strJson.replace(0,1,"\"");
-    strJson.replace(strJson.size()-1,1,"\"");
+    std::string strJson = ss.str(); // escapeJsonString("'" + ss.str() + "'");
+    // strJson.replace(0,1,"\"");
+    // strJson.replace(strJson.size()-1,1,"\"");
     return strJson;
 }
 
