@@ -679,7 +679,7 @@ bool CDAPI::InviteUser(Object& obj)
     string strPubkey = "";
     if(!FindValueAsString(objData, "to_name", strName)) return false;
     if(!FindValueAsString(objData, "to_email", strEmail)) return false;
-    if(!FindValueAsString(objData, "to_pubkey", strPubkey)) return false;
+    //if(!FindValueAsString(objData, "to_pubkey", strPubkey)) return false;
 
     CBitcoinAddress address(strPubkey);
     bool isValid = address.IsValid();
@@ -695,7 +695,7 @@ bool CDAPI::InviteUser(Object& obj)
     newObj.push_back(Pair("username", strUID));
     newObj.push_back(Pair("name", strName));
     newObj.push_back(Pair("email", strEmail));
-    newObj.push_back(Pair("pubkey", strPubkey));
+    //newObj.push_back(Pair("pubkey", strPubkey));
     newObj.push_back(Pair("challenge_code", boost::lexical_cast<std::string>(GetRand(999999))));
     file.obj = newObj;   
 
