@@ -79,6 +79,8 @@ void EventNotify(const std::string& strEvent)
     if(!ws_client)
     {
         ws_client = WebSocket::from_url("ws://localhost:5000/");
+    } else if(ws_client->getReadyState() == WebSocket::CLOSED) {
+        ws_client = WebSocket::from_url("ws://localhost:5000/");
     }
 
     assert(ws_client);
