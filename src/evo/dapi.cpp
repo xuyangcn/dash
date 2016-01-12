@@ -365,7 +365,7 @@ bool CDAPI::GetProfile(Object& obj)
     Object objData;
     string strUID = "";
     if(!FindValueAsObject(obj, "data", objData)) return false;
-    if(!FindValueAsString(obj, "to_uid", strUID)) return false;
+    if(!FindValueAsString(objData, "to_uid", strUID)) return false;
 
     // open the file and read it
     CDriveFile file(GetProfileFile(strUID));
