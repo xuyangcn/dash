@@ -586,7 +586,7 @@ bool CDAPI::SendMessage(Object& obj)
     if(!FindValueAsString(objData, "payload", strPayload)) return false;
 
     //TODO: this is presently sending the message to all users on the server
-    Object ret = GetMessageObject(1000, strUID1, strUID2, strSubCommand, strPayload);
+    Object ret = GetMessageObject(GetTime(), strUID1, strUID2, strSubCommand, strPayload);
     std::string strJson = SerializeJsonFromObject(ret);
 
     EventNotify(strJson);
