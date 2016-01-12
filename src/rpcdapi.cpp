@@ -87,11 +87,14 @@ Value dapif(const Array& params, bool fHelp)
     */
 
     std::string strPath = params[0].get_str();
+    
+    printf("path %s\n", strPath.c_str());
+
     std::ifstream t(strPath.c_str());
     std::string str((std::istreambuf_iterator<char>(t)),
                      std::istreambuf_iterator<char>());
 
-    printf("%s\n", str.c_str());
+    printf("json %s\n", str.c_str());
 
     json_spirit::Value val;
     
