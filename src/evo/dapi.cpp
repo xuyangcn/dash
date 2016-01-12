@@ -681,14 +681,14 @@ bool CDAPI::InviteUser(Object& obj)
     if(!FindValueAsString(objData, "to_email", strEmail)) return false;
     //if(!FindValueAsString(objData, "to_pubkey", strPubkey)) return false;
 
-    CBitcoinAddress address(strPubkey);
-    bool isValid = address.IsValid();
+    // CBitcoinAddress address(strPubkey);
+    // bool isValid = address.IsValid();
 
-    if(!isValid)
-    {
-        SetError(1005, "Invalid pubkey: " + strPubkey);
-        return false;   
-    }
+    // if(!isValid)
+    // {
+    //     SetError(1005, "Invalid pubkey: " + strPubkey);
+    //     return false;   
+    // }
 
     Object newObj;
     newObj.push_back(Pair("status", 1));
