@@ -472,6 +472,14 @@ std::string LicenseInfo()
            "\n";
 }
 
+void EventNotify(const std::string& strEvent)
+{
+    std::string strCmd = GetArg("-eventnotify", "");
+
+    boost::replace_all(strCmd, "%s", strEvent);
+    boost::thread t(runCommand, strCmd); // thread runs free
+}
+
 static void BlockNotifyCallback(const uint256& hashNewTip)
 {
     std::string strCmd = GetArg("-blocknotify", "");

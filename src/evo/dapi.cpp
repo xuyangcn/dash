@@ -9,7 +9,7 @@
 #include "main.h"
 #include "core_io.h"
 #include "db.h"
-//#include "init.h"
+#include "init.h"
 #include "dapi.h"
 #include "file.h"
 #include "json/json_spirit.h"
@@ -17,6 +17,11 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/thread.hpp>
+
+#include <string>
+#include <iostream>
+#include <cstdio>
+#include <memory>
 
 int nError;
 std::string strErrorMessage;
@@ -48,6 +53,18 @@ bool IsValidUsername(std::string strUsername)
     }
     return true;
 }
+
+// std::string exec(const char* cmd) {
+//     std::shared_ptr<FILE> pipe(popen(cmd, "r"), pclose);
+//     if (!pipe) return "ERROR";
+//     char buffer[128];
+//     std::string result = "";
+//     while (!feof(pipe.get())) {
+//         if (fgets(buffer, 128, pipe.get()) != NULL)
+//             result += buffer;
+//     }
+//     return result;
+// }
 
 void EventNotify(const std::string& strEvent)
 {

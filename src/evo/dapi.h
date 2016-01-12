@@ -9,12 +9,6 @@
 #ifndef DAPI_H
 #define DAPI_H
 
-namespace boost
-{
-class thread_group;
-} // namespace boost
-
-
 #include "main.h"
 #include "db.h"
 //ø#include "init.h"
