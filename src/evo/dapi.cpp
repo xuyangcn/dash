@@ -76,18 +76,15 @@ void EventNotify(const std::string& strEvent)
     //boost::replace_all(strCmd, "%s", strEvent);
     //boost::thread t(runCommand, strCmd); // thread runs free
 
-    if(!ws_client)
-    {
-        ws_client = WebSocket::from_url("ws://localhost:5000/");
-    } else if(ws_client->getReadyState() == WebSocket::CLOSED) {
-        ws_client = WebSocket::from_url("ws://localhost:5000/");
-    }
-
+    ws_client = WebSocket::from_url("ws://localhost:5000/");
+    
     assert(ws_client);
     ws_client->send(strEvent);
     ws_client->poll();
 
     printf("sending out: %s\n", strEvent.c_str());
+
+    ws_client->close();
 }
 
 std::string escapeJsonString(const std::string& input) {
