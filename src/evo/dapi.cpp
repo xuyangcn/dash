@@ -85,7 +85,7 @@ void EventNotify(const std::string& strEvent)
     ws_client->send(strEvent);
     ws_client->poll();
 
-    printf("%s\n", strEvent.c_str());
+    printf("sending out: %s\n", strEvent.c_str());
 }
 
 std::string escapeJsonString(const std::string& input) {
@@ -299,7 +299,7 @@ bool CDAPI::Execute(Object& obj)
     // send the user back the results of the query
     if(nError == 0) SetError(1007, "Unknown Command : " + strCommand);
     Object result;
-    Object ret = GetResultObject(1000, strCommand, result);
+    Object ret = GetResultObject(GetTime(), strCommand, result);
     std::string strJson = SerializeJsonFromObject(ret);
 
     EventNotify(strJson);
@@ -377,7 +377,7 @@ bool CDAPI::GetProfile(Object& obj)
     file.Read();
 
     // send the user back the results of the query
-    Object ret = GetResultObject(1000, "get_profile", file.obj);
+    Object ret = GetResultObject(GetTime(), "get_profile", file.obj);
     std::string strJson2 = SerializeJsonFromObject(file.obj);    
     std::string strJson = SerializeJsonFromObject(ret);
     EventNotify(strJson);
@@ -443,7 +443,7 @@ bool CDAPI::SetProfile(Object& obj)
     json_spirit::map_to_obj(mapObj, file.obj);
     file.Write();
 
-    Object ret = GetResultObject(1000, "set_profile", file.obj);
+    Object ret = GetResultObject(GetTime(), "set_profile", file.obj);
     std::string strJson = SerializeJsonFromObject(ret);
 
     EventNotify(strJson);
@@ -485,7 +485,7 @@ bool CDAPI::GetPrivateData(Object& obj)
     file.Read();
 
     // send the user back the results of the query
-    Object ret = GetResultObject(1000, "get_private_data", file.obj);
+    Object ret = GetResultObject(GetTime(), "get_private_data", file.obj);
     std::string strJson = SerializeJsonFromObject(ret);
     EventNotify(strJson);
 
@@ -545,7 +545,7 @@ bool CDAPI::SetPrivateData(Object& obj)
     file.Write();
 
     // send the user back the results of the query
-    Object ret = GetResultObject(1000, "set_private_data", file.obj);
+    Object ret = GetResultObject(GetTime(), "set_private_data", file.obj);
     std::string strJson = SerializeJsonFromObject(ret);
 
     EventNotify(strJson);
@@ -631,7 +631,7 @@ bool CDAPI::BroadcastMessage(Object& obj)
         //should probably figure out if it was broadcasted successfully
 
         // send the user back the results of the query
-        Object ret = GetResultObject(1000, "broadcast_message", retTx);
+        Object ret = GetResultObject(GetTime(), "broadcast_message", retTx);
         std::string strJson = SerializeJsonFromObject(ret);
 
         return true;
@@ -717,7 +717,7 @@ bool CDAPI::InviteUser(Object& obj)
     // }
 
     // send the user back the results of the query
-    Object ret = GetResultObject(1000, "invite_user", file.obj);
+    Object ret = GetResultObject(GetTime(), "invite_user", file.obj);
     std::string strJson = SerializeJsonFromObject(ret);
     EventNotify(strJson);
 
@@ -797,7 +797,7 @@ bool CDAPI::ValidateAccount(Object& obj)
     */
 
     // send the user back the results of the query
-    Object ret = GetResultObject(1000, "“validate_account”", file.obj);
+    Object ret = GetResultObject(GetTime(), "“validate_account”", file.obj);
     std::string strJson = SerializeJsonFromObject(ret);
     EventNotify(strJson);
 
@@ -831,7 +831,7 @@ bool CDAPI::SearchUsers(Object& obj)
     file.Read();
 
     // send the user back the results of the query
-    Object ret = GetResultObject(1000, "search_users", file.obj);
+    Object ret = GetResultObject(GetTime(), "search_users", file.obj);
     std::string strJson = SerializeJsonFromObject(ret);
 
     EventNotify(strJson);
