@@ -129,10 +129,10 @@ void SetError(int nErrorIn, std::string strMessageIn) {nError = nErrorIn; strErr
 }
 */
 
-Object GetResultObject(int nCommandID, std::string strCommand, Object& objFile)
+Object GetResultObject(std::string strID, std::string strCommand, Object& objFile)
 {
     Object retData;
-    retData.push_back(Pair("id", nCommandID));
+    retData.push_back(Pair("id", strID));
     retData.push_back(Pair("command", strCommand));
     retData.push_back(Pair("error_id", nError));
     retData.push_back(Pair("error_message", strErrorMessage));
@@ -145,10 +145,10 @@ Object GetResultObject(int nCommandID, std::string strCommand, Object& objFile)
     return ret;
 }
 
-Object GetMessageObject(int nCommandID, std::string strFromUserID, std::string strToUserID, std::string strSubCommand, std::string strMessage)
+Object GetMessageObject(std::string strID, std::string strFromUserID, std::string strToUserID, std::string strSubCommand, std::string strMessage)
 {
     Object retData;
-    retData.push_back(Pair("id", nCommandID));
+    retData.push_back(Pair("id", strID));
     retData.push_back(Pair("command", "send_message"));
     retData.push_back(Pair("error_id", nError));
     retData.push_back(Pair("error_message", strErrorMessage));
@@ -294,11 +294,13 @@ bool CDAPI::Execute(Object& obj)
     }
 
     // UNKNOWN COMMANDS
+    string strID = "";
+    if(!FindValueAsString(objData, "id", strID)) return false;
 
     // send the user back the results of the query
     if(nError == 0) SetError(1007, "Unknown Command : " + strCommand);
     Object result;
-    Object ret = GetResultObject(GetTime(), strCommand, result);
+    Object ret = GetResultObject(strID, strCommand, result);
     std::string strJson = SerializeJsonFromObject(ret);
 
     EventNotify(strJson);
@@ -365,6 +367,8 @@ bool CDAPI::GetProfile(Object& obj)
     string strUID = "";
     if(!FindValueAsObject(obj, "data", objData)) return false;
     if(!FindValueAsString(objData, "to_uid", strUID)) return false;
+    string strID = "";
+    if(!FindValueAsString(objData, "id", strID)) return false;
 
     // open the file and read it
     CDriveFile file(GetProfileFile(strUID));
@@ -376,7 +380,7 @@ bool CDAPI::GetProfile(Object& obj)
     file.Read();
 
     // send the user back the results of the query
-    Object ret = GetResultObject(GetTime(), "get_profile", file.obj);
+    Object ret = GetResultObject(strID, "get_profile", file.obj);
     std::string strJson2 = SerializeJsonFromObject(file.obj);    
     std::string strJson = SerializeJsonFromObject(ret);
     EventNotify(strJson);
@@ -412,6 +416,8 @@ bool CDAPI::SetProfile(Object& obj)
     if(!FindValueAsObject(obj, "data", objData)) return false;
     if(!FindValueAsArray(objData, "update", arrDataUpdate)) return false;
     if(!FindValueAsString(objData, "to_uid", strUID)) return false;
+    string strID = "";
+    if(!FindValueAsString(objData, "id", strID)) return false;
 
     // open the file and read it
     CDriveFile file(GetProfileFile(strUID));
@@ -442,7 +448,7 @@ bool CDAPI::SetProfile(Object& obj)
     json_spirit::map_to_obj(mapObj, file.obj);
     file.Write();
 
-    Object ret = GetResultObject(GetTime(), "set_profile", file.obj);
+    Object ret = GetResultObject(strID, "set_profile", file.obj);
     std::string strJson = SerializeJsonFromObject(ret);
 
     EventNotify(strJson);
@@ -477,6 +483,8 @@ bool CDAPI::GetPrivateData(Object& obj)
         SetError(1002, "Slot out of range");
         return false;
     }
+    string strID = "";
+    if(!FindValueAsString(objData, "id", strID)) return false;
 
     // open the file and read it
     CDriveFile file(GetPrivateDataFile(strUID, nSlot));
@@ -484,7 +492,7 @@ bool CDAPI::GetPrivateData(Object& obj)
     file.Read();
 
     // send the user back the results of the query
-    Object ret = GetResultObject(GetTime(), "get_private_data", file.obj);
+    Object ret = GetResultObject(strID, "get_private_data", file.obj);
     std::string strJson = SerializeJsonFromObject(ret);
     EventNotify(strJson);
 
@@ -519,6 +527,8 @@ bool CDAPI::SetPrivateData(Object& obj)
         SetError(1002, "Slot out of range");
         return false;
     }
+    string strID = "";
+    if(!FindValueAsString(objData, "id", strID)) return false;
 
     // open the file and read it
     CDriveFile file(GetPrivateDataFile(strUID, nSlot));
@@ -544,7 +554,7 @@ bool CDAPI::SetPrivateData(Object& obj)
     file.Write();
 
     // send the user back the results of the query
-    Object ret = GetResultObject(GetTime(), "set_private_data", file.obj);
+    Object ret = GetResultObject(strID, "set_private_data", file.obj);
     std::string strJson = SerializeJsonFromObject(ret);
 
     EventNotify(strJson);
@@ -581,9 +591,11 @@ bool CDAPI::SendMessage(Object& obj)
     if(!FindValueAsString(objData, "to_uid", strUID2)) return false;
     if(!FindValueAsString(objData, "sub_command", strSubCommand)) return false;
     if(!FindValueAsString(objData, "payload", strPayload)) return false;
+    string strID = "";
+    if(!FindValueAsString(objData, "id", strID)) return false;
 
     //TODO: this is presently sending the message to all users on the server
-    Object ret = GetMessageObject(GetTime(), strUID1, strUID2, strSubCommand, strPayload);
+    Object ret = GetMessageObject(strID, strUID1, strUID2, strSubCommand, strPayload);
     std::string strJson = SerializeJsonFromObject(ret);
 
     EventNotify(strJson);
@@ -615,6 +627,9 @@ bool CDAPI::BroadcastMessage(Object& obj)
     if(!FindValueAsString(objData, "sub_command", strSubCommand)) return false;
     if(!FindValueAsString(objData, "payload", strPayload)) return false;
 
+    string strID = "";
+    if(!FindValueAsString(objData, "id", strID)) return false;
+
     if(strSubCommand == "tx")
     {
         CTransaction tx;
@@ -630,7 +645,7 @@ bool CDAPI::BroadcastMessage(Object& obj)
         //should probably figure out if it was broadcasted successfully
 
         // send the user back the results of the query
-        Object ret = GetResultObject(GetTime(), "broadcast_message", retTx);
+        Object ret = GetResultObject(strID, "broadcast_message", retTx);
         std::string strJson = SerializeJsonFromObject(ret);
 
         return true;
@@ -665,6 +680,9 @@ bool CDAPI::InviteUser(Object& obj)
     string strUID = "";
     if(!FindValueAsObject(obj, "data", objData)) return false;
     if(!FindValueAsString(objData, "to_uid", strUID)) return false;
+
+    string strID = "";
+    if(!FindValueAsString(objData, "id", strID)) return false;
 
     // open the file and read it
     CDriveFile file(GetProfileFile(strUID));
@@ -716,7 +734,7 @@ bool CDAPI::InviteUser(Object& obj)
     // }
 
     // send the user back the results of the query
-    Object ret = GetResultObject(GetTime(), "invite_user", file.obj);
+    Object ret = GetResultObject(strID, "invite_user", file.obj);
     std::string strJson = SerializeJsonFromObject(ret);
     EventNotify(strJson);
 
@@ -749,6 +767,9 @@ bool CDAPI::ValidateAccount(Object& obj)
     if(!FindValueAsObject(obj, "data", objData)) return false;
     if(!FindValueAsString(objData, "to_uid", strUID)) return false;
     if(!FindValueAsString(objData, "to_challenge_code", strChallengeCode)) return false;
+
+    string strID = "";
+    if(!FindValueAsString(objData, "id", strID)) return false;
 
     // open the file and read it
     CDriveFile file(GetProfileFile(strUID));
@@ -796,7 +817,7 @@ bool CDAPI::ValidateAccount(Object& obj)
     */
 
     // send the user back the results of the query
-    Object ret = GetResultObject(GetTime(), "“validate_account”", file.obj);
+    Object ret = GetResultObject(strID, "“validate_account”", file.obj);
     std::string strJson = SerializeJsonFromObject(ret);
     EventNotify(strJson);
 
@@ -819,6 +840,12 @@ bool CDAPI::SearchUsers(Object& obj)
         }
     */
 
+    Object objData;
+    string strID = "";
+    if(!FindValueAsObject(obj, "data", objData)) return false;
+    if(!FindValueAsString(objData, "id", strID)) return false;
+
+
     // open the file and read it
     CDriveFile file(GetIndexFile("fiat_converters.js"));
 
@@ -830,7 +857,7 @@ bool CDAPI::SearchUsers(Object& obj)
     file.Read();
 
     // send the user back the results of the query
-    Object ret = GetResultObject(GetTime(), "search_users", file.obj);
+    Object ret = GetResultObject(strID, "search_users", file.obj);
     std::string strJson = SerializeJsonFromObject(ret);
 
     EventNotify(strJson);
