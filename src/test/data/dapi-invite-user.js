@@ -1,6 +1,7 @@
 {
     "object" : "dapi_command",
     "data" : {
+        "id" : "1111",
         "command" : "invite_user",
         "from_uid" : "evan",
         "to_uid" : "cryptofish82",
