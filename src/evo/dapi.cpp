@@ -714,7 +714,7 @@ bool CDAPI::InviteUser(Object& obj)
     newObj.push_back(Pair("name", strName));
     newObj.push_back(Pair("email", strEmail));
     newObj.push_back(Pair("stars", 5));
-    Object addresses;
+    Array addresses;
     newObj.push_back(Pair("addresses", addresses));
     //newObj.push_back(Pair("pubkey", strPubkey));
     newObj.push_back(Pair("challenge_code", boost::lexical_cast<std::string>(GetRand(999999))));
