@@ -766,7 +766,7 @@ Value movecmd(const Array& params, bool fHelp)
             "3. minconf           (numeric, optional, default=1) Only use funds with at least this many confirmations.\n"
             "4. \"comment\"       (string, optional) An optional comment, stored in the wallet only.\n"
             "\nResult:\n"
-            "true|false           (boolean) true if successfull.\n"
+            "true|false           (boolean) true if successful.\n"
             "\nExamples:\n"
             "\nMove 0.01 btc from the default account to the account named tabby\n"
             + HelpExampleCli("move", "\"\" \"tabby\" 0.01") +
@@ -1685,7 +1685,7 @@ Value keypoolrefill(const Array& params, bool fHelp)
             "\nFills the keypool."
             + HelpRequiringPassphrase() + "\n"
             "\nArguments\n"
-            "1. newsize     (numeric, optional, default=100) The new keypool size\n"
+            "1. newsize     (numeric, optional, default=" + itostr(DEFAULT_KEYPOOL_SIZE) + ") The new keypool size\n"
             "\nExamples:\n"
             + HelpExampleCli("keypoolrefill", "")
             + HelpExampleRpc("keypoolrefill", "")

@@ -116,7 +116,6 @@ public:
     void MarkSynced();
     void Sync(CNode* node, uint256 nProp, bool fPartial=false);
 
-    void Calculate();
     void ProcessMessage(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
     void NewBlock();
     CBudgetProposal *FindProposal(const std::string &strProposalName);
@@ -415,9 +414,8 @@ public:
 
     CBudgetProposal();
     CBudgetProposal(const CBudgetProposal& other);
-    CBudgetProposal(std::string strProposalNameIn, std::string strURLIn, int nBlockStartIn, int nBlockEndIn, CScript addressIn, CAmount nAmountIn, uint256 nFeeTXHashIn);
+    CBudgetProposal(std::string strProposalNameIn, std::string strURLIn, int nPaymentCount, CScript addressIn, CAmount nAmountIn, int nBlockStartIn, uint256 nFeeTXHashIn);
 
-    void Calculate();
     bool AddOrUpdateVote(CBudgetVote& vote, std::string& strError);
     bool HasMinimumRequiredSupport();
     std::pair<std::string, std::string> GetVotes();
@@ -492,7 +490,7 @@ public:
     CBudgetProposalBroadcast() : CBudgetProposal(){}
     CBudgetProposalBroadcast(const CBudgetProposal& other) : CBudgetProposal(other){}
     CBudgetProposalBroadcast(const CBudgetProposalBroadcast& other) : CBudgetProposal(other){}
-    CBudgetProposalBroadcast(std::string strProposalNameIn, std::string strURLIn, int nPaymentCount, CScript addressIn, CAmount nAmountIn, int nBlockStartIn, uint256 nFeeTXHashIn);
+    CBudgetProposalBroadcast(std::string strProposalNameIn, std::string strURLIn, int nPaymentCount, CScript addressIn, CAmount nAmountIn, int nBlockStartIn, uint256 nFeeTXHashIn) {}
 
     void swap(CBudgetProposalBroadcast& first, CBudgetProposalBroadcast& second) // nothrow
     {
