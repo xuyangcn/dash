@@ -379,8 +379,6 @@ void CDarksendPool::ProcessMessageDarksend(CNode* pfrom, std::string& strCommand
 
 }
 
-int randomizeList (int i) { return std::rand()%i;}
-
 void CDarksendPool::Reset(){
     cachedLastSuccess = 0;
     lastNewBlock = 0;
@@ -533,9 +531,9 @@ void CDarksendPool::Check()
                     txNew.vin.push_back(s);
             }
 
-            // shuffle the outputs for improved anonymity
-            std::random_shuffle ( txNew.vin.begin(),  txNew.vin.end(),  randomizeList);
-            std::random_shuffle ( txNew.vout.begin(), txNew.vout.end(), randomizeList);
+            // BIP69 https://github.com/kristovatlas/bips/blob/master/bip-0069.mediawiki
+            sort(txNew.vin.begin(), txNew.vin.end());
+            sort(txNew.vout.begin(), txNew.vout.end());
 
 
             LogPrint("darksend", "Transaction 1: %s\n", txNew.ToString());
@@ -946,7 +944,7 @@ bool CDarksendPool::IsCollateralValid(const CTransaction& txCollateral){
         nValueOut += o.nValue;
 
         if(!o.scriptPubKey.IsNormalPaymentScript()){
-            LogPrintf ("CDarksendPool::IsCollateralValid - Invalid Script %s\n", txCollateral.ToString());
+            LogPrintf ("CDarksendPool::IsCollateralValid - Invalid Script %s", txCollateral.ToString());
             return false;
         }
     }
@@ -964,17 +962,17 @@ bool CDarksendPool::IsCollateralValid(const CTransaction& txCollateral){
     }
 
     if(missingTx){
-        LogPrint("darksend", "CDarksendPool::IsCollateralValid - Unknown inputs in collateral transaction - %s\n", txCollateral.ToString());
+        LogPrint("darksend", "CDarksendPool::IsCollateralValid - Unknown inputs in collateral transaction - %s", txCollateral.ToString());
         return false;
     }
 
     //collateral transactions are required to pay out DARKSEND_COLLATERAL as a fee to the miners
     if(nValueIn - nValueOut < DARKSEND_COLLATERAL) {
-        LogPrint("darksend", "CDarksendPool::IsCollateralValid - did not include enough fees in transaction %d\n%s\n", nValueOut-nValueIn, txCollateral.ToString());
+        LogPrint("darksend", "CDarksendPool::IsCollateralValid - did not include enough fees in transaction %d\n%s", nValueOut-nValueIn, txCollateral.ToString());
         return false;
     }
 
-    LogPrint("darksend", "CDarksendPool::IsCollateralValid %s\n", txCollateral.ToString());
+    LogPrint("darksend", "CDarksendPool::IsCollateralValid %s", txCollateral.ToString());
 
     {
         LOCK(cs_main);
@@ -1382,7 +1380,7 @@ bool CDarksendPool::DoAutomaticDenominating(bool fDryRun)
         return false;
     }
 
-    if(chainActive.Tip()->nHeight - cachedLastSuccess < minBlockSpacing) {
+    if(!fDarksendMultiSession && chainActive.Tip()->nHeight - cachedLastSuccess < minBlockSpacing) {
         LogPrintf("CDarksendPool::DoAutomaticDenominating - Last successful Darksend action was too recent\n");
         strAutoDenomResult = _("Last successful Darksend action was too recent.");
         return false;
@@ -1402,10 +1400,9 @@ bool CDarksendPool::DoAutomaticDenominating(bool fDryRun)
     CAmount nOnlyDenominatedBalance;
     CAmount nBalanceNeedsDenominated;
 
-    // should not be less than fees in DARKSEND_COLLATERAL + few (lets say 5) smallest denoms
-    CAmount nLowestDenom = DARKSEND_COLLATERAL + darkSendDenominations[darkSendDenominations.size() - 1]*5;
+    CAmount nLowestDenom = darkSendDenominations[darkSendDenominations.size() - 1];
 
-    // if there are no DS collateral inputs yet
+    // if there are no confirmed DS collateral inputs yet
     if(!pwalletMain->HasCollateralInputs())
         // should have some additional amount for them
         nLowestDenom += DARKSEND_COLLATERAL*4;
@@ -1415,16 +1412,21 @@ bool CDarksendPool::DoAutomaticDenominating(bool fDryRun)
     // if balanceNeedsAnonymized is more than pool max, take the pool max
     if(nBalanceNeedsAnonymized > DARKSEND_POOL_MAX) nBalanceNeedsAnonymized = DARKSEND_POOL_MAX;
 
-    // if balanceNeedsAnonymized is more than non-anonymized, take non-anonymized
-    CAmount nAnonymizableBalance = pwalletMain->GetAnonymizableBalance();
-    if(nBalanceNeedsAnonymized > nAnonymizableBalance) nBalanceNeedsAnonymized = nAnonymizableBalance;
+    // try to overshoot target DS balance up to nLowestDenom
+    nBalanceNeedsAnonymized += nLowestDenom;
 
-    if(nBalanceNeedsAnonymized < nLowestDenom)
+    CAmount nAnonymizableBalance = pwalletMain->GetAnonymizableBalance();
+
+    // anonymizable balance is way too small
+    if(nAnonymizableBalance < nLowestDenom)
     {
         LogPrintf("DoAutomaticDenominating : No funds detected in need of denominating \n");
         strAutoDenomResult = _("No funds detected in need of denominating.");
         return false;
     }
+
+    // not enough funds to anonymze amount we want, try the max we can
+    if(nBalanceNeedsAnonymized > nAnonymizableBalance) nBalanceNeedsAnonymized = nAnonymizableBalance;
 
     LogPrint("darksend", "DoAutomaticDenominating : nLowestDenom=%d, nBalanceNeedsAnonymized=%d\n", nLowestDenom, nBalanceNeedsAnonymized);
 
@@ -1475,13 +1477,13 @@ bool CDarksendPool::DoAutomaticDenominating(bool fDryRun)
         int nUseQueue = rand()%100;
         UpdateState(POOL_STATUS_ACCEPTING_ENTRIES);
 
-        if(pwalletMain->GetDenominatedBalance(true) > 0){ //get denominated unconfirmed inputs
+        if(!fDarksendMultiSession && pwalletMain->GetDenominatedBalance(true) > 0) { //get denominated unconfirmed inputs
             LogPrintf("DoAutomaticDenominating -- Found unconfirmed denominated outputs, will wait till they confirm to continue.\n");
             strAutoDenomResult = _("Found unconfirmed denominated outputs, will wait till they confirm to continue.");
             return false;
         }
 
-        //check our collateral nad create new if needed
+        //check our collateral and create new if needed
         std::string strReason;
         CValidationState state;
         if(txCollateral == CMutableTransaction()){
@@ -1765,11 +1767,26 @@ bool CDarksendPool::CreateDenominated(int64_t nTotalValue)
     }
 
     // ****** Add denoms ************ /
+
     BOOST_REVERSE_FOREACH(int64_t v, darkSendDenominations){
+
+        // Note: denoms are skipped if there are already DENOMS_COUNT_MAX of them
+
+        // check skipped denoms
+        if(IsDenomSkipped(v)) continue;
+
+        // find new denoms to skip if any (ignore the largest one)
+        if (v != darkSendDenominations[0] && pwalletMain->CountInputsWithAmount(v) > DENOMS_COUNT_MAX){
+            strAutoDenomResult = strprintf(_("Too many %f denominations, removing."), (float)v/COIN);
+            LogPrintf("DoAutomaticDenominating : %s\n", strAutoDenomResult);
+            darkSendDenominationsSkipped.push_back(v);
+            continue;
+        }
+
         int nOutputs = 0;
 
         // add each output up to 10 times until it can't be added again
-        while(nValueLeft - v >= DARKSEND_COLLATERAL && nOutputs <= 10) {
+        while(nValueLeft - v >= 0 && nOutputs <= 10) {
             CScript scriptDenom;
             CPubKey vchPubKey;
             //use a unique change address

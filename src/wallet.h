@@ -48,6 +48,8 @@ static const CAmount DEFAULT_TRANSACTION_MAXFEE = 0.1 * COIN;
 static const CAmount nHighTransactionMaxFeeWarning = 100 * nHighTransactionFeeWarning;
 //! Largest (in bytes) free transaction we're willing to create
 static const unsigned int MAX_FREE_TRANSACTION_CREATE_SIZE = 1000;
+//! -keypool default
+static const unsigned int DEFAULT_KEYPOOL_SIZE = 1000;
 
 class CAccountingEntry;
 class CCoinControl;
@@ -900,7 +902,11 @@ public:
             const CTxIn vin = CTxIn(hashTx, i);
 
             if(pwallet->IsSpent(hashTx, i) || pwallet->IsLockedCoin(hashTx, i)) continue;
-            if(fMasterNode && vout[i].nValue == 1000*COIN) continue; // do not count MN-like outputs
+            // do not count MN-like outputs
+            if(fMasterNode && vout[i].nValue == 1000*COIN) continue;
+            // do not count outputs that are 10 times smaller then the smallest denomination
+            // otherwise they will just lead to higher fee / lower priority
+            if(vout[i].nValue <= darkSendDenominations[darkSendDenominations.size() - 1]/10) continue;
 
             const int rounds = pwallet->GetInputDarksendRounds(vin);
             if(rounds >=-2 && rounds < nDarksendRounds) {
