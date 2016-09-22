@@ -1,15 +1,15 @@
 [Unit]
-Description=Dash's distributed currency daemon
+Description=Opalcoin's distributed currency daemon
 After=network.target
 
 [Service]
-User=dash
-Group=dash
+User=opalcoin
+Group=opalcoin
 
 Type=forking
-PIDFile=/var/lib/dashd/dashd.pid
-ExecStart=/usr/bin/dashd -daemon -pid=/var/lib/dashd/dashd.pid \
--conf=/etc/dash/dash.conf -datadir=/var/lib/dashd -disablewallet
+PIDFile=/var/lib/opalcoind/opalcoind.pid
+ExecStart=/usr/bin/opalcoind -daemon -pid=/var/lib/opalcoind/opalcoind.pid \
+-conf=/etc/opalcoin/opalcoin.conf -datadir=/var/lib/opalcoind -disablewallet
 
 Restart=always
 PrivateTmp=true

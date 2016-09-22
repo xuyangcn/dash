@@ -1,6 +1,6 @@
 all:
-	$(MAKE) -C .. dash_test
+	$(MAKE) -C .. opalcoin_test
 clean:
-	$(MAKE) -C .. dash_test_clean
+	$(MAKE) -C .. opalcoin_test_clean
 check:
-	$(MAKE) -C .. dash_test_check
+	$(MAKE) -C .. opalcoin_test_check

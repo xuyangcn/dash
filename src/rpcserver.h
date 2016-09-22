@@ -93,7 +93,7 @@ public:
 };
 
 /**
- * Dash RPC command dispatcher.
+ * Opalcoin RPC command dispatcher.
  */
 class CRPCTable
 {
