@@ -57,7 +57,7 @@ static void convertSeed6(std::vector<CAddress> &vSeedsOut, const SeedSpec6 *data
 static Checkpoints::MapCheckpoints mapCheckpoints =
         boost::assign::map_list_of
         //(  1500, uint256("0x000000aaf0300f59f49bc3e970bad15c11f961fe2347accffff19d96ec9778e3"))
-        ( 1,uint256("000"))
+        ( 0,uint256("0x000005abfe70b570ec7fd409e39dca87cc154aae22773ae325c3fbae8b24d751"))
         ;
 static const Checkpoints::CCheckpointData data = {
         &mapCheckpoints,
@@ -175,7 +175,7 @@ public:
         convertSeed6(vFixedSeeds, pnSeed6_main, ARRAYLEN(pnSeed6_main));
 
         fRequireRPCPassword = true;
-        fMiningRequiresPeers = true;
+        fMiningRequiresPeers = false;
         fAllowMinDifficultyBlocks = false;
         fDefaultConsistencyChecks = false;
         fRequireStandard = true;
