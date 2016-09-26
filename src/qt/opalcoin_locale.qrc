@@ -1,0 +1,20 @@
+<!DOCTYPE RCC><RCC version="1.0">
+    <qresource prefix="/translations">
+        <file alias="bg">locale/opalcoin_bg.qm</file>
+        <file alias="de">locale/opalcoin_de.qm</file>
+        <file alias="en">locale/opalcoin_en.qm</file>
+        <file alias="es">locale/opalcoin_es.qm</file>
+        <file alias="fi">locale/opalcoin_fi.qm</file>
+        <file alias="fr">locale/opalcoin_fr.qm</file>
+        <file alias="it">locale/opalcoin_it.qm</file>
+        <file alias="ja">locale/opalcoin_ja.qm</file>
+        <file alias="pl">locale/opalcoin_pl.qm</file>
+        <file alias="pt">locale/opalcoin_pt.qm</file>
+        <file alias="ru">locale/opalcoin_ru.qm</file>
+        <file alias="sk">locale/opalcoin_sk.qm</file>
+        <file alias="sv">locale/opalcoin_sv.qm</file>
+        <file alias="vi">locale/opalcoin_vi.qm</file>
+        <file alias="zh_CN">locale/opalcoin_zh_CN.qm</file>
+        <file alias="zh_TW">locale/opalcoin_zh_TW.qm</file>
+    </qresource>
+</RCC>
